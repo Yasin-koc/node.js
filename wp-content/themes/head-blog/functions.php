@@ -373,3 +373,22 @@ if ( ! function_exists( 'wp_body_open' ) ) :
         do_action( 'wp_body_open' );
     }
 endif;
+function ana_sayfada_tek_yazi_goster( $query ) {
+    // Sadece ana sayfada ve ana sorguda (main query) işlem yap
+    if ( $query->is_home() && $query->is_main_query() ) {
+        $query->set( 'posts_per_page', 1 ); // Sadece 1 yazı göster
+    }
+}
+add_action( 'pre_get_posts', 'ana_sayfada_tek_yazi_goster' );
+
+add_filter( 'the_excerpt', function ( $excerpt ) {
+
+    if ( is_home() || is_front_page() ) {
+        
+        // 3. Eğer ana sayfadaysak, özeti (excerpt) çöpe at, yazının TAMAMINI (content) getir.
+        return get_the_content();
+    }
+
+    // 4. Eğer ana sayfada değilsek (örneğin arama sonuçlarındaysak) normal özet görünmeye devam etsin.
+    return $excerpt;
+} );
